@@ -1,13 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+		"Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+		sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+		monospace;
+}
+:root {
+	--side-padding: 38px; /* 기본값: 모바일 */
+	--max-width: 600px;
+}
+
+@media (min-width: 768px) {
+	:root {
+		--side-padding: 100px; /* md 이상: 데스크탑 */
+		--max-width: 600px;
+	}
+}
+
+@layer components {
+	.text-label {
+		@apply text-xs text-black/60 font-suit font-semibold;
+	}
+	.text-label-black {
+		@apply block text-sm font-semibold;
+	}
+	.text-value {
+		@apply text-black font-suit font-normal;
+	}
+	.text-valueTitle {
+		@apply text-[17px] text-black font-suit font-semibold;
+	}
+	.text-sectionTitle {
+		@apply text-lg text-black font-suit font-bold;
+	}
 }
