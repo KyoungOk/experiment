@@ -55,10 +55,10 @@
 		@apply block text-sm font-semibold;
 	}
 	.text-value {
-		@apply text-black font-suit font-normal;
+		@apply text-[14px] text-black font-suit font-bold;
 	}
 	.text-valueTitle {
-		@apply text-[17px] text-black font-suit font-semibold;
+		@apply text-[16px] text-black font-suit font-bold;
 	}
 	.text-sectionTitle {
 		@apply text-lg text-black font-suit font-bold;

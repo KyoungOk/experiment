@@ -23,7 +23,7 @@ export default function Home() {
 				const makerSnapshot = await getDocs(makerQuery);
 
 				if (!makerSnapshot.empty) {
-					navigate("/makerHome");
+					navigate("/homeMaker");
 					return;
 				}
 
@@ -34,7 +34,7 @@ export default function Home() {
 				const testerSnapshot = await getDocs(testerQuery);
 
 				if (!testerSnapshot.empty) {
-					navigate("/testerHome");
+					navigate("/homeTester");
 					return;
 				}
 

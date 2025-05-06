@@ -5,9 +5,9 @@ import Footer from ".//components/Footer";
 import Button from ".//components/Button";
 
 const testerCopy =
-	"테스터는 상품을 테스트하여 피드백을 제공하고 메이커로부터 보상을 받는 사람입니다";
+	"테스터는 상품을 테스트하고 피드백을 제공함으로써 보상을 받는 사람입니다";
 const makerCopy =
-	"메이커는 상품이나 기능을 희망하는 테스터와 함께 미리 테스트하고 피드백을 받는 사람입니다.";
+	"메이커는 테스터로부터 상품이나 기능에 대한 피드백을 받고 보상을 제공하는 사람입니다.";
 
 export default function ChooseTM() {
 	return (
@@ -44,8 +44,10 @@ export default function ChooseTM() {
 					</p>
 					<Link
 						to="/signup?role=maker"
-						className="w-full max-w-[100%] md:max-w-[320px] text-center bg-black text-white text-lg font-bold font-suit px-12 md:px-16 py-4 rounded-full hover:bg-gray-800 transition">
-						나는 메이커입니다
+						className="w-full max-w-[100%] md:max-w-[320px]">
+						<Button type="primary" size="lg">
+							나는 메이커입니다
+						</Button>
 					</Link>
 				</div>
 			</div>

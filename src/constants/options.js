@@ -15,6 +15,10 @@ export const interestOptions = [
 	{ key: "lifestyle", label: "라이프스타일" },
 ];
 
+export const genderOptions = [
+	{ key: "female", label: "여" },
+	{ key: "male", label: "남" },
+];
 export const jobOptions = [
 	{ key: "developer", label: "개발자" },
 	{ key: "designer", label: "디자이너" },
@@ -36,4 +40,16 @@ export const ageOptions = [
 	{ key: "30s", label: "30대" },
 	{ key: "40s", label: "40대" },
 	{ key: "50_plus", label: "50대 이상" },
+];
+
+export const deviceOptions = [
+	{ key: "iphone", label: "아이폰" },
+	{ key: "android", label: "안드로이드" },
+	{ key: "web", label: "웹사이트" },
+];
+
+export const reviewOptions = [
+	{ key: "1", label: "그렇지 않습니다" },
+	{ key: "2", label: "대체로 그렇습니다" },
+	{ key: "3", label: "그렇습니다" },
 ];

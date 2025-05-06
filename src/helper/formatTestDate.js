@@ -16,3 +16,17 @@ export default function formatTestDate(startDate, endDate, locale = "ko") {
 	const formattedEnd = new Intl.DateTimeFormat(locale, options).format(end);
 	return `${formattedStart} - ${formattedEnd}`;
 }
+
+export function formatSingleDate(startDate, locale = "ko") {
+	if (!startDate) return "";
+	const start = new Date(startDate);
+
+	const options = {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	};
+
+	const formattedStart = new Intl.DateTimeFormat(locale, options).format(start);
+	return `${formattedStart}`;
+}

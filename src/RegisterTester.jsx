@@ -1,17 +1,17 @@
 import React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CommonHeader from "./components/CommonHeader";
+import OnboardingHeader from "./components/OnboardingHeader";
 import Footer from "./components/Footer";
 import Button from "./components/Button";
 import Input from "./components/Input";
 import Radio from "./components/Radio";
 import { db } from "./firebase";
 import { interestOptions, jobOptions } from ".//constants/options";
-import { collection, addDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-
-export default function ProfileForm() {
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+export default function RegisterTester() {
+	const [user, setUser] = useState(null);
 	const [step, setStep] = useState(1);
 	const [name, setName] = useState("");
 	const [gender, setGender] = useState("female");
@@ -21,6 +21,7 @@ export default function ProfileForm() {
 	const [jobDetail, setJobDetail] = useState("");
 	const [interests, setInterests] = useState([]);
 	const [email, setEmail] = useState("");
+	const [profilePhoto, setProfilePhoto] = useState("");
 	const navigate = useNavigate();
 	const handleNext = () => {
 		if (name && gender && age && device) setStep(2);
@@ -43,8 +44,8 @@ export default function ProfileForm() {
 			const user = auth.currentUser;
 			if (!user) throw new Error("로그인이 필요합니다.");
 
-			await addDoc(collection(db, "testers"), {
-				uid: user.uid,
+			const testerRef = doc(db, "testers", user.uid); // ← 문서 ID를 uid로 지정
+			await setDoc(testerRef, {
 				email: user.email || null,
 				displayName: user.displayName || null,
 				name,
@@ -59,38 +60,44 @@ export default function ProfileForm() {
 			});
 
 			setStep(1);
-			navigate("/success?role=tester");
+			navigate("/success");
 		} catch (error) {
 			console.error("Error adding document: ", error);
 		}
 	};
 
+	useEffect(() => {
+		const auth = getAuth();
+
+		const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+			if (firebaseUser) {
+				setUser(firebaseUser);
+				setName(firebaseUser.displayName || "");
+				setEmail(firebaseUser.email || "");
+				setProfilePhoto(firebaseUser.photoURL || "");
+			}
+		});
+
+		return () => unsubscribe();
+	}, []);
+
 	return (
 		<div className="min-h-screen flex flex-col">
-			<CommonHeader />
-			<div className="relative flex flex-col md:flex-row md:items-center justify-start gap-0 md:gap-[60px] md:px-0 mt-0 md:mt-20 mb-0 md:mb-0 z-10">
+			<OnboardingHeader />
+			<div className="relative flex flex-col md:items-center justify-start gap-4 pt-4 px-[var(--side-padding)] md:mt-10">
 				{/* Main Copy */}
-				<div className="block md:hidden justify-start z-10 mt-0 mb-1">
-					<p className="text-[35px] whitespace-pre-line font-helvetic font-semibold leading-tight tracking-tight">
-						{"Testers."}
+				<div className="items-start justify-start z-10 mb-2">
+					<p className="text-[54px] whitespace-pre-line font-helvetic font-semibold leading-tight tracking-tight">
+						Testers.
 					</p>
-				</div>
-				<div className="hidden md:flex flex-col items-start justify-start px-[var(--side-padding)] gap-4 mb-0 mt-10">
-					<p className="text-[90px] whitespace-pre-line font-helvetic font-semibold leading-tight tracking-tight">
-						{"Testers."}
-					</p>
-					<p className="text-[32px] max-w-[350px] whitespace-pre-line font-suit leading-tight tracking-tight">
-						{"다양한 서비스를 먼저 체험하고, 보상을 받는 방법!"}
+					<p className="text-[17px] font-suit tracking-tight">
+						테스터로 매칭햐기 위해 직업, 관심사 등의 정보를 입력하세요.
 					</p>
 				</div>
 
 				{/* Profile Area */}
 				<div className="w-full max-w-[400px]">
-					<h1 className="text-[16px] font-suit mb-4 leading-tight tracking-tight">
-						테스터로 매칭햐기 위해 직업, 관심사 등의 정보를 입력하세요.
-					</h1>
-
-					<form onSubmit={handleSubmit} className="space-y-3">
+					<form onSubmit={handleSubmit} className="space-y-3 pb-10">
 						{step === 1 && (
 							<>
 								{/* 이름 */}
@@ -130,7 +137,7 @@ export default function ProfileForm() {
 									/>
 								</div>
 								{/* 성별 */}
-								<div>
+								<div className="pb-2">
 									<label className="block text-sm font-semibold mb-1">
 										성별
 									</label>
@@ -153,21 +160,21 @@ export default function ProfileForm() {
 									</div>
 								</div>
 								{/* 핸드폰 기종 */}
-								<div>
+								<div className="pb-3">
 									<label className="block text-sm font-semibold mt-4 mb-1">
 										핸드폰 기종
 									</label>
 									<div className="flex gap-6">
 										<Radio
 											name="device"
-											value="아이폰"
+											value="iphone"
 											label="아이폰"
 											checked={device === "iphone"}
 											onChange={(e) => setDevice(e.target.value)}
 										/>
 										<Radio
 											name="device"
-											value="안드로이드"
+											value="android"
 											label="안드로이드"
 											checked={device === "android"}
 											onChange={(e) => setDevice(e.target.value)}
@@ -176,8 +183,8 @@ export default function ProfileForm() {
 								</div>
 
 								<Button
-									type="secondary"
-									size="md"
+									type="primary"
+									size="lg"
 									onClick={handleNext}
 									className="w-full md:max-w-[400px]">
 									다음
@@ -186,7 +193,7 @@ export default function ProfileForm() {
 						)}
 						{step === 2 && (
 							<>
-								<div className=" flex flex-col  md:gap-[20px]">
+								<div className=" flex flex-col  space-y-5 pb-10">
 									{/* 직업 */}
 									<div>
 										<label className="block text-sm font-semibold mb-1">
@@ -241,7 +248,7 @@ export default function ProfileForm() {
 									<Button
 										type="primary"
 										buttonType="submit"
-										size="md"
+										size="lg"
 										className="w-full md:max-w-[400px]">
 										프로필 저장
 									</Button>

@@ -1,29 +1,33 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CommonHeader from "./components/CommonHeader";
+import OnboardingHeader from "./components/OnboardingHeader";
 import Footer from "./components/Footer";
 import Button from "./components/Button";
 import Input from "./components/Input";
 import Radio from "./components/Radio";
 import { db } from "./firebase";
-import { collection, addDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default function RegisterMaker() {
 	const [companyName, setCompanyName] = useState("");
 	const [homepage, setHomepage] = useState("");
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
+	const [productLink, setProductLink] = useState("");
 	const navigate = useNavigate();
+
 	// ✅ user 정보로 기본값 세팅
 	useEffect(() => {
 		const auth = getAuth();
-		const user = auth.currentUser;
-		if (user) {
-			if (user.displayName) setName(user.displayName);
-			if (user.email) setEmail(user.email);
-		}
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				if (user.displayName) setName(user.displayName);
+				if (user.email) setEmail(user.email);
+			}
+		});
+		return () => unsubscribe();
 	}, []);
 	const [errors, setErrors] = useState({
 		companyName: false,
@@ -51,13 +55,13 @@ export default function RegisterMaker() {
 			const auth = getAuth();
 			const user = auth.currentUser;
 			if (!user) throw new Error("로그인이 필요합니다.");
-
-			await addDoc(collection(db, "makers"), {
-				uid: user.uid,
+			const testerRef = doc(db, "makers", user.uid); // ← 문서 ID를 uid로 지정
+			await setDoc(testerRef, {
 				companyName,
 				homepage,
 				name,
 				email,
+				productLink,
 				timestamp: new Date(),
 			});
 			navigate("/success?role=maker");
@@ -68,29 +72,20 @@ export default function RegisterMaker() {
 
 	return (
 		<div className="min-h-screen flex flex-col">
-			<CommonHeader />
-			<div className="relative flex flex-col md:flex-row md:items-center justify-start gap-0 md:gap-[60px] md:px-0 mt-0 md:mt-20 mb-0 md:mb-0 z-10">
+			<OnboardingHeader />
+			<div className="relative flex flex-col md:items-center justify-start gap-4 pt-4 px-[var(--side-padding)] md:mt-10">
 				{/* Main Copy */}
-				<div className="block md:hidden justify-start z-10 mt-0 mb-1">
-					<p className="text-[35px] whitespace-pre-line font-helvetic font-semibold leading-tight tracking-tight">
-						{"Makers."}
+				<div className="flex flex-col  w-full max-w-[400px]  items-start justify-start z-10 mb-2">
+					<p className="text-[54px] whitespace-pre-line font-helvetic font-semibold leading-tight tracking-tight">
+						Makers.
 					</p>
-				</div>
-				<div className="hidden md:flex flex-col items-start justify-start px-[var(--side-padding)] gap-4 mb-0 mt-10">
-					<p className="text-[90px] whitespace-pre-line font-helvetic font-semibold leading-tight tracking-tight">
-						{"Makers."}
-					</p>
-					<p className="text-[32px] max-w-[350px] whitespace-pre-line font-suit leading-tight tracking-tight">
-						{"원하는 사용자를 선택해서 상품을 테스트하세요."}
+					<p className="text-[17px] font-suit tracking-tight">
+						메이커의 기본적인 회사 정보를 입력해주세요.
 					</p>
 				</div>
 
 				{/* Profile Area */}
-				<div className="w-full max-w-[400px]">
-					<h1 className="text-[16px] font-suit mb-4 leading-tight tracking-tight">
-						메이커의 기본적인 회사 정보를 입력해주세요.
-					</h1>
-
+				<div className="w-full max-w-[400px] pb-10">
 					<form onSubmit={handleSubmit} className="space-y-3">
 						{/* 회사이름 */}
 						<div>
@@ -108,7 +103,7 @@ export default function RegisterMaker() {
 						<div>
 							<div className="flex flex-nowrap items-center gap-x-2">
 								<label className="block text-sm font-semibold mb-1">
-									홈페이지
+									회사 홈페이지
 								</label>
 								<label className="block text-sm font-light mb-1">
 									(소셜미디어, 링크드인으로 대체 가능)
@@ -119,6 +114,22 @@ export default function RegisterMaker() {
 								value={homepage}
 								onChange={(e) => setHomepage(e.target.value)}
 								required
+							/>
+						</div>
+						{/* 상품 */}
+						<div>
+							<div className="flex flex-nowrap items-center gap-x-2">
+								<label className="block text-sm font-semibold mb-1">
+									서비스 또는 상품 링크
+								</label>
+								<label className="block text-sm font-light mb-1">
+									(앱스토어, 구글 플레이 링크 대체 가능)
+								</label>
+							</div>
+							<Input
+								type="text"
+								value={productLink}
+								onChange={(e) => setProductLink(e.target.value)}
 							/>
 						</div>
 						{/* 이름 */}
@@ -148,7 +159,7 @@ export default function RegisterMaker() {
 							<Button
 								type="primary"
 								buttonType="submit"
-								size="md"
+								size="lg"
 								className="w-full md:max-w-[400px]">
 								저장
 							</Button>

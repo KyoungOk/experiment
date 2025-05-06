@@ -10,20 +10,19 @@ export default function Button({
 	...props
 }) {
 	const base =
-		"flex justify-center items-center gap-3 w-full px-6 rounded-full text-base font-bold font-suit transition duration-200";
+		"flex justify-center items-center gap-3 w-full px-6 rounded-[12px] font-suit transition duration-200";
 
 	const variants = {
 		primary: "border border-black bg-black text-white hover:bg-gray-800",
 		secondary:
-			"border-2 border-black text-black bg-white hover:bg-black hover:text-white",
-		tertiary:
-			"border border-gray-500 text-black bg-white hover:bg-black hover:text-white",
+			"text-white bg-brandPurple  hover:bg-purple-700 hover:text-white",
+		tertiary: "text-black bg-gray-100 hover:bg-gray-200 hover:text-black",
 	};
 
 	const sizes = {
-		sm: "w-[240px] py-3",
-		md: "w-full md:max-w-[400px] py-3",
-		lg: "w-full md:max-w-[480px] py-4",
+		sm: "w-[240px] py-2 text-sm font-bold",
+		md: "w-full h-[46px]  text-[13px] font-bold",
+		lg: "w-full py-4 text-base font-bold",
 	};
 
 	return (
